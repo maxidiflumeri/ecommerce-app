@@ -10,31 +10,31 @@ const PORT = configService.get(Configuration.PORT) || process.env.PORT
 class Server {
     public app: Application
 
-    constructor(){
+    constructor() {
         this.app = express()
         this.initializeSetters()
         this.initializeMiddleares()
         this.initializeRoutes()
-    }    
-    
-    public listen(){
+    }
+
+    public listen() {
         this.app.listen(this.app.get('port'), () => {
             console.log(`Server listening on port ${this.app.get('port')}`)
         })
     }
-    
-    private initializeMiddleares(){
+
+    private initializeMiddleares() {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: false }));
         this.app.use(morgan('dev'))
     }
 
-    private initializeRoutes(){
+    private initializeRoutes() {
         this.app.use('/api/products', productsRouter)
         this.app.use('/api/carts', cartsRouter)
     }
 
-    private initializeSetters(){
+    private initializeSetters() {
         this.app.set('port', PORT)
     }
 }

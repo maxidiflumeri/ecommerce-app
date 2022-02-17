@@ -51,10 +51,7 @@ export default class CartService {
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
-            cartRet = carts.find(cart => cart.id == id)
-            if (!cartRet) {
-                throw new Error('Cart not found')
-            }
+            cartRet = carts.find((cart: { id: number }) => cart.id == id)
         } catch (error) {
             throw new Error(error.message)
         }
@@ -89,7 +86,7 @@ export default class CartService {
             var cartIndex = carts.findIndex(cart => cart.id == id)
 
             if (cartIndex !== -1) {
-                carts[cartIndex].products.push(product)           
+                carts[cartIndex].products.push(product)
                 cartUpdated = carts[cartIndex]
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
             }
@@ -100,7 +97,36 @@ export default class CartService {
         return cartUpdated
     }
 
-    async deleteById(id: number) {
+    async deleteProduct(id_cart: number, id_product: number): Promise<{ CartReadDto: CartReadDto, productIndex: number }> {
+        let cartUpdated: CartReadDto = null
+        let productIndexRet: number = -1
+
+        try {
+            const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
+            const carts = JSON.parse(cartsString.toString())
+            var cartIndex = carts.findIndex((cart: { id: number }) => cart.id == id_cart)
+
+            if (cartIndex !== -1) {
+                let productIndex = carts[cartIndex].products.findIndex((product: { id: number }) => product.id == id_product)
+                if (productIndex !== -1) {
+                    productIndexRet = productIndex
+                    carts[cartIndex].products.splice(productIndex, 1)
+                    cartUpdated = carts[cartIndex]
+                    await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
+                }
+            }
+        } catch (error) {
+            throw new Error(error.message)
+        }
+
+        return {
+            CartReadDto: cartUpdated,
+            productIndex: productIndexRet
+        }
+    }
+
+    async deleteById(id: number): Promise<Boolean> {
+        let deleted = false
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
@@ -109,9 +135,11 @@ export default class CartService {
             if (cartIndex !== -1) {
                 carts.splice(cartIndex, 1)
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
+                deleted = true
             }
         } catch (error) {
             throw new Error(error.message)
         }
+        return deleted
     }
 }

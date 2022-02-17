@@ -1,1 +1,1 @@
-[{"products":[{"name":"Leche","description":"leche descremada","code":"5455HSJKS4","urlPhoto":"http://foto","price":60,"stock":80}],"id":1}]
+[{"products":[{"name":"Fideos","description":"Fideos tallarines","code":"875UYQQ21","urlPhoto":"http://foto","price":80,"stock":45,"id":1}],"id":1}]

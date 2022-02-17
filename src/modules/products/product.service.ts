@@ -105,7 +105,8 @@ export default class ProductService {
         return productUpdated
     }
 
-    async deleteById(id: number) {
+    async deleteById(id: number): Promise<boolean> {
+        let deleted = false
         try {
             const productsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const products = JSON.parse(productsString.toString())
@@ -114,9 +115,11 @@ export default class ProductService {
             if (prodIndex !== -1) {
                 products.splice(prodIndex, 1)
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(products))
+                deleted = true
             }
         } catch (error) {
             throw new Error(error.message)
         }
+        return deleted
     }
 }
