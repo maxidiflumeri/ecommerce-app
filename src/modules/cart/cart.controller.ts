@@ -117,6 +117,7 @@ class CartController {
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new CartsResultMessage(StatusCodes.INTERNAL_SERVER_ERROR, error.message, null))
         }
+        next()
     }
 
     private validateErrors(errors): string {
