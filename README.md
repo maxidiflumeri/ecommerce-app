@@ -249,7 +249,7 @@
     }
 }
 ```
-**PUT api/carts/:id:cart/product/:id_product (se le pasa un id del cart y un id de producto para eliminar ese producto del carrito)** 
+**PUT api/carts/:id_cart/product/:id_product (se le pasa un id del cart y un id de producto para eliminar ese producto del carrito)** 
 
 *Ejemplo de respuesta:*
 ```
