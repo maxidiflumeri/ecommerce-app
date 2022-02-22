@@ -1,4 +1,4 @@
-### CONFIGURACION ###
+# CONFIGURACION #
 
 *En la raíz del proyecto crear un archivo llamado '.env' y dentro configurar la siguiente variable*
 
@@ -136,13 +136,13 @@
     "data": null
 }
 
-### ENDPOINT CARRITO ###
+# ENDPOINT CARRITO #
 
 **GET api/carts (Devuelve todos los carritos)**
 
 *Ejemplo de respuesta:*
 
-{
+`{
     "status": 200,
     "message": "OK",
     "data": [
@@ -165,7 +165,7 @@
             "id": 2
         }
     ]
-}
+}`
 
 **GET api/carts/:id (Devuelve un cart especificando el numero de id)**
 
