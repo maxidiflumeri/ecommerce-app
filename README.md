@@ -24,7 +24,7 @@
 **GET api/products (Devuelve todos los productos)**
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -49,11 +49,11 @@
         }
     ]
 }
-
+```
 **GET api/products/:id (Devuelve un producto especificando el numero de id)**
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -67,11 +67,11 @@
         "id": 1
     }
 }
-
+```
 **POST api/products/** 
 
 *Ejemplo body:*
-
+```
 {
     "name": "Queso",
     "description": "Queso rallado",
@@ -80,9 +80,9 @@
     "price": 250,
     "stock": 20   
 }
-
+```
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -96,11 +96,11 @@
         "id": 3
     }
 }
-
+```
 **PUT api/products/:id**
 
 *Ejemplo body:*
-
+```
 {
     "name": "Queso",
     "description": "Queso rallado",
@@ -109,9 +109,9 @@
     "price": 250,
     "stock": 25   
 }
-
+```
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -125,24 +125,24 @@
         "id": 3
     }
 }
-
+```
 **DELETE api/products/:id**
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
     "data": null
 }
-
+```
 # ENDPOINT CARRITO #
 
 **GET api/carts (Devuelve todos los carritos)**
 
 *Ejemplo de respuesta:*
-
-`{
+```
+{
     "status": 200,
     "message": "OK",
     "data": [
@@ -165,12 +165,12 @@
             "id": 2
         }
     ]
-}`
-
+}
+```
 **GET api/carts/:id (Devuelve un cart especificando el numero de id)**
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -184,11 +184,11 @@
         "id": 1
     }
 }
-
+```
 **POST api/carts/** 
 
 *Ejemplo body:*
-
+```
 {
     "products":
     [
@@ -198,9 +198,9 @@
         }    
     ]
 }
-
+```
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -214,11 +214,11 @@
         "id": 2
     }
 }
-
+```
 **PUT api/carts/:id (se le pasa un id del cart y un body con el producto que queres agregar al carrito)** 
 
 *Ejemplo body:*
-
+```
 {
     "products":
     [
@@ -228,9 +228,9 @@
         }    
     ]
 }
-
+```
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -248,11 +248,11 @@
         "id": 1
     }
 }
-
+```
 **PUT api/carts/:id:cart/product/:id_product (se le pasa un id del cart y un id de producto para eliminar ese producto del carrito)** 
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
@@ -266,17 +266,17 @@
         "id": 1
     }
 }
-
+```
 **DELETE api/carts/:id**
 
 *Ejemplo de respuesta:*
-
+```
 {
     "status": 200,
     "message": "OK",
     "data": null
 }
-
+```
 
 
 
