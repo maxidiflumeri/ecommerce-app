@@ -5,6 +5,7 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { ProductResultMessage } from '../../messages/products.messages';
 import { ProductCreateDto } from "./dtos/product-create.dto";
 import { ProductReadDto } from "./dtos/product-read.dto";
+import { ProductUpdateDto } from './dtos/product-update.dto';
 import ProductService from './product.service'
 
 const productService: ProductService = new ProductService('products')
@@ -63,12 +64,19 @@ class ProductController {
                 res.status(StatusCodes.BAD_REQUEST).json(new ProductResultMessage(StatusCodes.BAD_REQUEST, 'Product id parameter must be required.', null))
             }
 
-            const productUpdated: ProductReadDto = await productService.update(parseInt(req.params.id), req.body)
+            const productUpdate: ProductUpdateDto = plainToClass(ProductUpdateDto, req.body)
+            const errors = await validate(productUpdate, { skipMissingProperties: true })
 
-            if (!productUpdated) {
-                res.status(StatusCodes.NOT_FOUND).json(new ProductResultMessage(StatusCodes.NOT_FOUND, 'Product not found.', null))
+            if (errors.length > 0) {
+                const messages: string = this.validateErrors(errors)
+                res.status(StatusCodes.CONFLICT).json(new ProductResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
-                res.status(StatusCodes.OK).json(new ProductResultMessage(StatusCodes.OK, ReasonPhrases.OK, productUpdated))
+                const productUpdated: ProductReadDto = await productService.update(parseInt(req.params.id), req.body)
+                if (!productUpdated) {
+                    res.status(StatusCodes.NOT_FOUND).json(new ProductResultMessage(StatusCodes.NOT_FOUND, 'Product not found.', null))
+                } else {
+                    res.status(StatusCodes.OK).json(new ProductResultMessage(StatusCodes.OK, ReasonPhrases.OK, productUpdated))
+                }
             }
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new ProductResultMessage(StatusCodes.INTERNAL_SERVER_ERROR, error.message, null))

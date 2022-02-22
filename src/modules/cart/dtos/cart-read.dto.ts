@@ -1,5 +1,6 @@
 import { IsNotEmpty } from "class-validator"
 import { ProductReadDto } from '../../products/dtos/product-read.dto'
+import { CartAddProductDto } from "./cart-add-product.dto"
 
 export class CartReadDto {
     @IsNotEmpty()
@@ -9,5 +10,5 @@ export class CartReadDto {
     timestamp: Date
 
     @IsNotEmpty()
-    products: ProductReadDto[]
+    products: CartAddProductDto[]
 }

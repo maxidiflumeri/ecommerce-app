@@ -1,1 +1,1 @@
-[{"products":[{"name":"Fideos","description":"Fideos tallarines","code":"875UYQQ21","urlPhoto":"http://foto","price":80,"stock":45,"id":1}],"id":1}]
+[{"products":[{"idProduct":2,"amount":2}],"id":1},{"products":[{"idProduct":1,"amount":15}],"id":2}]

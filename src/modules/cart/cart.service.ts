@@ -3,6 +3,7 @@ import fs from 'fs'
 import { CartReadDto } from './dtos/cart-read.dto'
 import { ProductReadDto } from '../products/dtos/product-read.dto'
 import { CartCreateDto } from './dtos/cart-create.dto'
+import { CartAddProductDto } from './dtos/cart-add-product.dto'
 
 export default class CartService {
     fileName: string
@@ -77,7 +78,7 @@ export default class CartService {
         }
     }
 
-    async update(id: number, product: ProductReadDto): Promise<CartReadDto> {
+    async update(id: number, product: CartAddProductDto): Promise<CartReadDto> {
         let cartUpdated: CartReadDto = null
 
         try {
@@ -85,7 +86,7 @@ export default class CartService {
             const carts = JSON.parse(cartsString.toString())
             var cartIndex = carts.findIndex(cart => cart.id == id)
 
-            if (cartIndex !== -1) {
+            if (cartIndex !== -1) {                
                 carts[cartIndex].products.push(product)
                 cartUpdated = carts[cartIndex]
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
@@ -107,7 +108,7 @@ export default class CartService {
             var cartIndex = carts.findIndex((cart: { id: number }) => cart.id == id_cart)
 
             if (cartIndex !== -1) {
-                let productIndex = carts[cartIndex].products.findIndex((product: { id: number }) => product.id == id_product)
+                let productIndex = carts[cartIndex].products.findIndex((product: { idProduct: number }) => product.idProduct == id_product)
                 if (productIndex !== -1) {
                     productIndexRet = productIndex
                     carts[cartIndex].products.splice(productIndex, 1)

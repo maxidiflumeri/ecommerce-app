@@ -4,33 +4,27 @@ export class ProductCreateDto {
     @IsNotEmpty()
     id: number
        
-    @IsDefined()
-    @IsNotEmpty()    
+    @IsDefined()        
     @IsNotEmpty()
     name: string
 
     @IsDefined()
-    @IsNotEmpty()    
     @IsNotEmpty()
     description: string
     
-    @IsDefined()
-    @IsNotEmpty()    
+    @IsDefined()    
     @IsNotEmpty()
     code: string
 
-    @IsDefined()
-    @IsNotEmpty()    
+    @IsDefined()    
     @IsNotEmpty()
     urlPhoto: string
 
-    @IsDefined()
-    @IsNotEmpty()    
+    @IsDefined()    
     @IsNotEmpty()
     price: number
 
-    @IsDefined()
-    @IsNotEmpty()    
+    @IsDefined()    
     @IsNotEmpty()
     stock: number   
 }

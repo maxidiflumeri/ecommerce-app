@@ -1,8 +1,29 @@
-### ENDPOINT PRODUCTOS ###
+### CONFIGURACION ###
 
-GET api/products (Devuelve todos los productos)
+*En la raíz del proyecto crear un archivo llamado '.env' y dentro configurar la siguiente variable*
 
-Ejemplo de respuesta:
+**PORT=8080**
+
+*Para ejecutar el proyecto en ambiente de desarrollo correr el siguiente comando*
+
+**NPM RUN START:DEV**
+
+*Para ejecutar el proyecto en ambiente de produccion correr el siguiente comando*
+
+**NPM START**
+
+*Para buildear el proyecto correr el siguiente comando*
+
+**NPM RUN BUILD**
+
+*Para limpiar el buildeo del proyecto correr el siguiente comando*
+
+**NPM RUN CLEAN**
+# ENDPOINT PRODUCTOS #
+
+**GET api/products (Devuelve todos los productos)**
+
+*Ejemplo de respuesta:*
 
 {
     "status": 200,
@@ -29,9 +50,9 @@ Ejemplo de respuesta:
     ]
 }
 
-GET api/products/:id (Devuelve un producto especificando el numero de id)
+**GET api/products/:id (Devuelve un producto especificando el numero de id)**
 
-Ejemplo de respuesta:
+*Ejemplo de respuesta:*
 
 {
     "status": 200,
@@ -47,9 +68,9 @@ Ejemplo de respuesta:
     }
 }
 
-POST api/products/ 
+**POST api/products/** 
 
-Ejemplo body:
+*Ejemplo body:*
 
 {
     "name": "Queso",
@@ -60,7 +81,7 @@ Ejemplo body:
     "stock": 20   
 }
 
-Ejemplo de respuesta:
+*Ejemplo de respuesta:*
 
 {
     "status": 200,
@@ -76,9 +97,9 @@ Ejemplo de respuesta:
     }
 }
 
-PUT api/products/:id
+**PUT api/products/:id**
 
-Ejemplo body:
+*Ejemplo body:*
 
 {
     "name": "Queso",
@@ -89,7 +110,7 @@ Ejemplo body:
     "stock": 25   
 }
 
-Ejemplo de respuesta:
+*Ejemplo de respuesta:*
 
 {
     "status": 200,
@@ -105,9 +126,9 @@ Ejemplo de respuesta:
     }
 }
 
-DELETE api/products/:id
+**DELETE api/products/:id**
 
-Ejemplo de respuesta:
+*Ejemplo de respuesta:*
 
 {
     "status": 200,
@@ -116,4 +137,153 @@ Ejemplo de respuesta:
 }
 
 ### ENDPOINT CARRITO ###
+
+**GET api/carts (Devuelve todos los carritos)**
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": [
+        {
+            "products": [
+                {
+                    "idProduct": 2,
+                    "amount": 20
+                }
+            ],
+            "id": 1
+        },
+        {
+            "products": [
+                {
+                    "idProduct": 1,
+                    "amount": 15
+                }
+            ],
+            "id": 2
+        }
+    ]
+}
+
+**GET api/carts/:id (Devuelve un cart especificando el numero de id)**
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "products": [
+            {
+                "idProduct": 2,
+                "amount": 20
+            }
+        ],
+        "id": 1
+    }
+}
+
+**POST api/carts/** 
+
+*Ejemplo body:*
+
+{
+    "products":
+    [
+        {
+            "idProduct": 1,
+            "amount": 15
+        }    
+    ]
+}
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "products": [
+            {
+                "idProduct": 1,
+                "amount": 15
+            }
+        ],
+        "id": 2
+    }
+}
+
+**PUT api/carts/:id (se le pasa un id del cart y un body con el producto que queres agregar al carrito)** 
+
+*Ejemplo body:*
+
+{
+    "products":
+    [
+        {
+            "idProduct": 1,
+            "amount": 2
+        }    
+    ]
+}
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "products": [
+            {
+                "idProduct": 2,
+                "amount": 20
+            },
+            {
+                "idProduct": 1,
+                "amount": 2
+            }
+        ],
+        "id": 1
+    }
+}
+
+**PUT api/carts/:id:cart/product/:id_product (se le pasa un id del cart y un id de producto para eliminar ese producto del carrito)** 
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": {
+        "products": [
+            {
+                "idProduct": 1,
+                "amount": 2
+            }
+        ],
+        "id": 1
+    }
+}
+
+**DELETE api/carts/:id**
+
+*Ejemplo de respuesta:*
+
+{
+    "status": 200,
+    "message": "OK",
+    "data": null
+}
+
+
+
+
+
+
+
+
+
+
 
