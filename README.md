@@ -4,6 +4,10 @@
 
 **PORT=8080**
 
+*Para instalación de dependencias correr el siguiente comando*
+
+**NPM INSTALL**
+
 *Para ejecutar el proyecto en ambiente de desarrollo correr el siguiente comando*
 
 **NPM RUN START:DEV**
