@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "ts:node": "ts-node src/index.ts",
-    "clean": "rm -r dist",
+    "clean": "rm -r dist/",
     "build": "tsc",
     "start": "node dist/src/index.js",
     "start:dev": "nodemon src/index.ts"
