@@ -1,9 +1,9 @@
 import { plainToClass } from 'class-transformer'
 import fs from 'fs'
-import { CartReadDto } from './dtos/cart-read.dto'
-import { ProductReadDto } from '../products/dtos/product-read.dto'
-import { CartCreateDto } from './dtos/cart-create.dto'
-import { CartAddProductDto } from './dtos/cart-add-product.dto'
+import { CartReadDto } from '../dtos/cart-read.dto'
+import { ProductReadDto } from '../../products/dtos/product-read.dto'
+import { CartCreateDto } from '../dtos/cart-create.dto'
+import { CartAddProductDto } from '../dtos/cart-add-product.dto'
 
 export default class CartService {
     fileName: string

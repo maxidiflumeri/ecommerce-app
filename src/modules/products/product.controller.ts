@@ -6,9 +6,9 @@ import { ProductResultMessage } from '../../messages/products.messages';
 import { ProductCreateDto } from "./dtos/product-create.dto";
 import { ProductReadDto } from "./dtos/product-read.dto";
 import { ProductUpdateDto } from './dtos/product-update.dto';
-import ProductService from './product.service'
+import ProductService from './services/product.mongo.service'
 
-const productService: ProductService = new ProductService('products')
+const productService: ProductService = new ProductService()
 
 class ProductController {
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -17,7 +17,7 @@ class ProductController {
                 res.status(StatusCodes.BAD_REQUEST).json(new ProductResultMessage(StatusCodes.BAD_REQUEST, 'Product id parameter must be required.', null))
             }
 
-            const product: ProductReadDto = await productService.getById(parseInt(req.params.id))
+            const product: ProductReadDto = await productService.getById(req.params.id)
 
             if (!product) {
                 res.status(StatusCodes.NOT_FOUND).json(new ProductResultMessage(StatusCodes.NOT_FOUND, 'Product not found.', null))
@@ -71,7 +71,7 @@ class ProductController {
                 const messages: string = this.validateErrors(errors)
                 res.status(StatusCodes.CONFLICT).json(new ProductResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
-                const productUpdated: ProductReadDto = await productService.update(parseInt(req.params.id), req.body)
+                const productUpdated: ProductReadDto = await productService.update(req.params.id, req.body)
                 if (!productUpdated) {
                     res.status(StatusCodes.NOT_FOUND).json(new ProductResultMessage(StatusCodes.NOT_FOUND, 'Product not found.', null))
                 } else {
@@ -90,12 +90,12 @@ class ProductController {
                 res.status(StatusCodes.BAD_REQUEST).json(new ProductResultMessage(StatusCodes.BAD_REQUEST, 'Product id parameter must be required.', null))
             }
 
-            const deleted: Boolean = await productService.deleteById(parseInt(req.params.id))
+            const productDeleted: ProductReadDto = await productService.deleteById(req.params.id)
 
-            if (!deleted) {
+            if (!productDeleted) {
                 res.status(StatusCodes.NOT_FOUND).json(new ProductResultMessage(StatusCodes.NOT_FOUND, 'Product not found.', null))
             } else {
-                res.status(StatusCodes.OK).json(new ProductResultMessage(StatusCodes.OK, ReasonPhrases.OK, null))
+                res.status(StatusCodes.OK).json(new ProductResultMessage(StatusCodes.OK, ReasonPhrases.OK, productDeleted))
             }
 
         } catch (error) {

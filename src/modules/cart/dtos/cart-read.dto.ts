@@ -4,10 +4,10 @@ import { CartAddProductDto } from "./cart-add-product.dto"
 
 export class CartReadDto {
     @IsNotEmpty()
-    id: number
+    _id: string
 
     @IsNotEmpty()
-    timestamp: Date
+    createdAt: Date
 
     @IsNotEmpty()
     products: CartAddProductDto[]

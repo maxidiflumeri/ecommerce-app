@@ -1,13 +1,13 @@
 import { plainToClass } from 'class-transformer'
 import fs from 'fs'
-import { ProductCreateDto } from './dtos/product-create.dto'
-import { ProductReadDto } from './dtos/product-read.dto'
-import { ProductUpdateDto } from './dtos/product-update.dto'
+import { ProductCreateDto } from '../dtos/product-create.dto'
+import { ProductReadDto } from '../dtos/product-read.dto'
+import { ProductUpdateDto } from '../dtos/product-update.dto'
 
 export default class ProductService {
     fileName: string
 
-    constructor(fileName) {
+    constructor(fileName: string) {
         this.fileName = fileName
     }
 

@@ -3,6 +3,7 @@
 *En la raíz del proyecto crear un archivo llamado '.env' y dentro configurar la siguiente variable*
 
 **PORT=8080**
+**MONGO_CONNECTION=mongodb+srv://maxiSistema:Maxi1234@sistema.1kzud.mongodb.net/ecommerce**
 
 *Para instalación de dependencias correr el siguiente comando*
 

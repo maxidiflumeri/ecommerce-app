@@ -19,7 +19,8 @@ class ConfigService {
             this.envConfig = parse(fs.readFileSync(envFilePath))
         } else {
             this.envConfig = {
-                PORT: process.env.PORT
+                PORT: process.env.PORT,
+                MONGO_CONNECTION: process.env.MONGO_CONNECTION
             }
         }
     }

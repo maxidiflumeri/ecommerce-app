@@ -4,15 +4,14 @@ import { Request, Response, NextFunction } from 'express'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { CartsResultMessage } from '../../messages/cart.messages';
 import { ProductReadDto } from '../products/dtos/product-read.dto';
-import ProductService from '../products/product.service';
-
-import CartService from "./cart.service";
+import ProductService from '../products/services/product.mongo.service';
+import CartService from "./services/cart.mongo.service";
 import { CartAddProductDto } from './dtos/cart-add-product.dto';
 import { CartUpdateDto } from './dtos/cart-update.dto';
 import { CartCreateDto } from './dtos/cart-create.dto';
 import { CartReadDto } from "./dtos/cart-read.dto";
 
-const cartService = new CartService('carts')
+const cartService = new CartService()
 class CartController {
     public productService: ProductService
 
@@ -26,7 +25,7 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Cart id parameter must be required.', null))
             }
 
-            const cart: CartReadDto = await cartService.getById(parseInt(req.params.id))
+            const cart: CartReadDto = await cartService.getById(req.params.id)
 
             if (!cart) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
@@ -51,6 +50,7 @@ class CartController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            let isErrors: boolean = false
             const cartCreate: CartCreateDto = plainToClass(CartCreateDto, req.body)
             const errors = await validate(cartCreate, { skipMissingProperties: true })
 
@@ -58,24 +58,34 @@ class CartController {
                 const messages: string = this.validateErrors(errors)
                 res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
-                const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, cartCreate.products[0])
-                const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
-                if (errorsProduct.length > 0) {
-                    const messagesProduct: string = this.validateErrors(errorsProduct)
-                    res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
-                } else {
-                    const product: ProductReadDto = await this.productService.getById(cartAddProduct.idProduct)
-                    if (!product) {
-                        res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Product id not found.', null))
+                for (let index = 0; index < cartCreate.products.length; index++) {
+                    const element = cartCreate.products[index];
+                    const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, element)
+                    const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
+
+                    if (errorsProduct.length > 0) {
+                        isErrors = true
+                        const messagesProduct: string = this.validateErrors(errorsProduct)
+                        res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
                     } else {
-                        if (product.stock < cartAddProduct.amount) {
-                            res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, 'stock is les than amount.', null))
+                        const product: ProductReadDto = await this.productService.getById(cartAddProduct._id)
+                        if (!product) {
+                            isErrors = true
+                            res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, `Product id ${cartAddProduct._id} not found.`, null))
                         } else {
-                            const cartCreated: CartReadDto = await cartService.create(cartCreate)
-                            res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartCreated))
+                            if (product.stock < cartAddProduct.amount) {
+                                isErrors = true
+                                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, `stock in product id ${cartAddProduct._id} is les than amount.`, null))
+                            }
                         }
                     }
                 }
+
+                if (!isErrors) {
+                    const cartCreated: CartReadDto = await cartService.create(cartCreate)
+                    res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartCreated))
+                }
+
             }
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new CartsResultMessage(StatusCodes.INTERNAL_SERVER_ERROR, error.message, null))
@@ -88,7 +98,7 @@ class CartController {
             if (!req.params) {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Cart id parameter must be required.', null))
             }
-
+            let isErrors: boolean = false
             const cartUpdate: CartUpdateDto = plainToClass(CartUpdateDto, req.body)
             const errors = await validate(cartUpdate, { skipMissingProperties: true })
 
@@ -96,24 +106,36 @@ class CartController {
                 const messages: string = this.validateErrors(errors)
                 res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
-                const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, cartUpdate.products[0])
-                const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
-                if (errorsProduct.length > 0) {
-                    const messagesProduct: string = this.validateErrors(errorsProduct)
-                    res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
-                } else {
-                    const product: ProductReadDto = await this.productService.getById(cartAddProduct.idProduct)
-                    if (!product) {
-                        res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Product id not found.', null))
+                for (let index = 0; index < cartUpdate.products.length; index++) {
+                    const element = cartUpdate.products[index];
+                    const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, element)
+                    const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
+                    if (errorsProduct.length > 0) {
+                        isErrors = true
+                        const messagesProduct: string = this.validateErrors(errorsProduct)
+                        res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
                     } else {
-                        if (product.stock < cartAddProduct.amount) {
-                            res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, 'stock is les than amount.', null))
+                        const product: ProductReadDto = await this.productService.getById(cartAddProduct._id)
+                        const cart: CartReadDto = await cartService.getById(req.params.id)
+                        if (!product) {
+                            isErrors = true
+                            res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Product id not found.', null))
+                        } else if (!cart) {
+                            isErrors = true
+                            res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart id not found.', null))
                         } else {
-                            const cartUpdated: CartReadDto = await cartService.update(parseInt(req.params.id), cartUpdate.products[0])
-                            res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartUpdated))
+                            if (product.stock < cartAddProduct.amount + cart.products.find(prod => prod._id == cartAddProduct._id).amount) {
+                                isErrors = true
+                                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, 'stock is les than amount.', null))
+                            }
                         }
                     }
                 }
+                if (!isErrors) {
+                    const cartUpdated: CartReadDto = await cartService.update(req.params.id, cartUpdate.products)
+                    res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartUpdated))
+                }
+
             }
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new CartsResultMessage(StatusCodes.INTERNAL_SERVER_ERROR, error.message, null))
@@ -127,7 +149,7 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Cart id parameter must be required.', null))
             }
 
-            const deleted: Boolean = await cartService.deleteById(parseInt(req.params.id))
+            const deleted: CartReadDto = await cartService.deleteById(req.params.id)
 
             if (!deleted) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
@@ -151,7 +173,7 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Product id parameter must be required.', null))
             }
 
-            const cartUpdated: { CartReadDto: CartReadDto, productIndex: number } = await cartService.deleteProduct(parseInt(req.params.id_cart), parseInt(req.params.id_product))
+            const cartUpdated: { CartReadDto: CartReadDto, productIndex: number } = await cartService.deleteProduct(req.params.id_cart, req.params.id_product)
 
             if (!cartUpdated) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
@@ -176,4 +198,4 @@ class CartController {
     }
 }
 
-export default new CartController(new ProductService('products'))
+export default new CartController(new ProductService())

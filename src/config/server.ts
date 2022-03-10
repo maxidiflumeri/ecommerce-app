@@ -4,6 +4,7 @@ import cartsRouter from "../modules/cart/cart.routes"
 import morgan from 'morgan'
 import configService from "./config.service"
 import { Configuration } from "./config.key"
+import { connect } from 'mongoose'
 
 const PORT = configService.get(Configuration.PORT) || process.env.PORT
 
@@ -18,9 +19,19 @@ class Server {
     }
 
     public listen() {
-        this.app.listen(this.app.get('port'), () => {
-            console.log(`Server listening on port ${this.app.get('port')}`)
+        this.app.listen(this.app.get('port'), async () => {
+            try {
+                console.log(`Server listening on port ${this.app.get('port')}`)
+                await this.connectDb()
+                console.log('conectado a la base de datos mongo')
+            } catch (error) {
+                console.log(error.message)
+            }
         })
+    }
+
+    async connectDb() {
+        await connect(configService.get(Configuration.MONGO_CONNECTION));
     }
 
     private initializeMiddleares() {

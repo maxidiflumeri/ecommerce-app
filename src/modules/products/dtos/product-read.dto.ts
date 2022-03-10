@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator"
 
 export class ProductReadDto {
     @IsNotEmpty()
-    id: number
+    _id: string
 
     @IsNotEmpty()
     timestamp: Date
@@ -23,5 +23,8 @@ export class ProductReadDto {
     price: number
 
     @IsNotEmpty()
-    stock: number   
+    stock: number
+
+    @IsNotEmpty()
+    createdAt: Date
 }
