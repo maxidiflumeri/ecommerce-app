@@ -21,15 +21,23 @@ class Server {
         this.app.listen(this.app.get('port'), async () => {
             try {
                 console.log(`Server listening on port ${this.app.get('port')}`)
-                await this.connectDb()
-                console.log('conectado a la base de datos mongo')
+                if (configService.get(Configuration.DB_TYPE) == 'MONGO') {
+                    await this.connectDbMongo()
+                    console.log('connect to Mongo database successfully')
+                } else if (configService.get(Configuration.DB_TYPE) == 'FIREBASE') {
+                    console.log('connect to Firebase database successfully')
+                } else if (configService.get(Configuration.DB_TYPE) == 'FILE') {
+                    console.log('connect to File database successfully')
+                } else {
+                    console.log('connect to Mongo database successfully')
+                }
             } catch (error) {
                 console.log(error.message)
             }
         })
     }
 
-    async connectDb() {
+    async connectDbMongo() {
         await connect(configService.get(Configuration.MONGO_CONNECTION));
     }
 

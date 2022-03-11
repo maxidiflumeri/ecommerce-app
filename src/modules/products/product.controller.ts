@@ -1,5 +1,3 @@
-import { Configuration } from "../../config/config.key"
-import configService from "../../config/config.service"
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response, NextFunction } from 'express'
@@ -8,26 +6,9 @@ import { ProductResultMessage } from '../../messages/products.messages';
 import { ProductCreateDto } from "./dtos/product-create.dto";
 import { ProductReadDto } from "./dtos/product-read.dto";
 import { ProductUpdateDto } from './dtos/product-update.dto';
-import ProductServiceFirebase from './services/product.firebase.service'
-import ProductServiceMongo from './services/product.mongo.service'
-import ProductServiceMem from './services/product.mem.service'
-
-
-
-
-
+import ProductFactory from "./services/productFactory.service";
 class ProductController {
-    public productService: any
-
-    constructor() {
-        if (configService.get(Configuration.DB_TYPE) == 'FIREBASE') {
-            this.productService = new ProductServiceFirebase()
-        } else if (configService.get(Configuration.DB_TYPE) == 'MONGO') {
-            this.productService = new ProductServiceMongo()
-        } else {
-            this.productService = new ProductServiceMem('products')
-        }
-    }
+    public productService: any = ProductFactory.get()    
 
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

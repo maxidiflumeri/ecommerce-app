@@ -20,7 +20,7 @@ export default class ProductService {
             await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, '[]')
             id = await this.save(product)
         }
-        let productCreated = await this.getById(id)
+        let productCreated = await this.getById(id.toString())
         return plainToClass(ProductReadDto, productCreated)
     }
 
@@ -46,12 +46,12 @@ export default class ProductService {
         return id
     }
 
-    async getById(id: number): Promise<ProductReadDto> {
+    async getById(id: string): Promise<ProductReadDto> {
         var productRet = null
         try {
             const productsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const products = JSON.parse(productsString.toString())
-            productRet = products.find(product => product.id == id)
+            productRet = products.find(product => product.id == parseInt(id))
             if (!productRet) {
                 throw new Error('Product not found')
             }
@@ -80,13 +80,13 @@ export default class ProductService {
         }
     }
 
-    async update(id: number, product: ProductUpdateDto): Promise<ProductReadDto> {
+    async update(id: string, product: ProductUpdateDto): Promise<ProductReadDto> {
         let productUpdated: ProductReadDto = null
 
         try {
             const productsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const products = JSON.parse(productsString.toString())
-            var prodIndex = products.findIndex(product => product.id == id)
+            var prodIndex = products.findIndex(product => product.id == parseInt(id))
 
             if (prodIndex !== -1) {
                 products[prodIndex].name = product.name
@@ -105,12 +105,12 @@ export default class ProductService {
         return productUpdated
     }
 
-    async deleteById(id: number): Promise<boolean> {
+    async deleteById(id: string): Promise<boolean> {
         let deleted = false
         try {
             const productsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const products = JSON.parse(productsString.toString())
-            var prodIndex = products.findIndex(product => product.id == id)
+            var prodIndex = products.findIndex(product => product.id == parseInt(id))
 
             if (prodIndex !== -1) {
                 products.splice(prodIndex, 1)

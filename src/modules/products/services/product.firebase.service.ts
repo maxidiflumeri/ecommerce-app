@@ -2,9 +2,8 @@ import { ProductCreateDto } from "../dtos/product-create.dto"
 import { ProductReadDto } from "../dtos/product-read.dto"
 import { ProductUpdateDto } from "../dtos/product-update.dto"
 import { db } from "../../../config/firebase"
-
-
-export default class ProductService {
+import moment from 'moment'
+export default class ProductService {    
 
     public products = db.collection('products')
 
@@ -12,6 +11,7 @@ export default class ProductService {
         let productRet: ProductReadDto = null
 
         try {
+            product.createdAt = moment().format()
             const productCreated = await this.products.add(product)            
             productRet = await this.getById(productCreated.id)            
         } catch (error) {

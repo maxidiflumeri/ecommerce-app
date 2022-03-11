@@ -1,5 +1,4 @@
 import { IsDefined, IsNotEmpty } from "class-validator"
-
 export class ProductCreateDto { 
     @IsNotEmpty()
     id: number
@@ -26,5 +25,7 @@ export class ProductCreateDto {
 
     @IsDefined()    
     @IsNotEmpty()
-    stock: number   
+    stock: number    
+    
+    createdAt: string
 }
