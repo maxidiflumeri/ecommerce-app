@@ -3,9 +3,6 @@ import { IsNotEmpty } from "class-validator"
 export class ProductReadDto {
     @IsNotEmpty()
     _id: string
-
-    @IsNotEmpty()
-    timestamp: Date
     
     @IsNotEmpty()
     name: string

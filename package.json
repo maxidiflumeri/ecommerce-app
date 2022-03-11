@@ -19,6 +19,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "express": "^4.17.2",
+    "firebase-admin": "^10.0.2",
     "http-exception-transformer": "^1.2.3",
     "http-status-codes": "^2.2.0",
     "mongoose": "^6.2.4",

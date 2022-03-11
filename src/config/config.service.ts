@@ -20,7 +20,8 @@ class ConfigService {
         } else {
             this.envConfig = {
                 PORT: process.env.PORT,
-                MONGO_CONNECTION: process.env.MONGO_CONNECTION
+                MONGO_CONNECTION: process.env.MONGO_CONNECTION,
+                DB_TYPE: process.env.DB_TYPE
             }
         }
     }

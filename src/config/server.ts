@@ -7,7 +7,6 @@ import { Configuration } from "./config.key"
 import { connect } from 'mongoose'
 
 const PORT = configService.get(Configuration.PORT) || process.env.PORT
-
 class Server {
     public app: Application
 
