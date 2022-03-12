@@ -4,6 +4,8 @@
 
 **PORT=8080**
 **MONGO_CONNECTION=mongodb+srv://maxiSistema:Maxi1234@sistema.1kzud.mongodb.net/ecommerce**
+**FIREBASE_CONNECTION=https://ecommerce.firebaseio.com**
+**DB_TYPE=(COMPLETAR ESTA VARIABLE CON LA PERSISTENCIA DE DATOS DESEADA: OPCIONES: 'FIREBASE', 'MONGO', 'FILE')**
 
 *Para instalación de dependencias correr el siguiente comando*
 

@@ -8,7 +8,7 @@ import { CartAddProductDto } from '../dtos/cart-add-product.dto'
 export default class CartService {
     fileName: string
 
-    constructor(fileName) {
+    constructor(fileName: string) {
         this.fileName = fileName
     }
 
@@ -21,7 +21,7 @@ export default class CartService {
             await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, '[]')
             id = await this.save(cart)
         }
-        let cartCreated = await this.getById(id)
+        let cartCreated = await this.getById(id.toString())
         return plainToClass(CartReadDto, cartCreated)
     }
 
@@ -33,11 +33,11 @@ export default class CartService {
 
             if (carts.length == 0) {
                 id = 1
-                cart.id = id
+                cart.id = id.toString()
                 carts.push(cart)
             } else {
-                id = carts[carts.length - 1].id + 1
-                cart.id = id
+                id = parseInt(carts[carts.length - 1].id) + 1
+                cart.id = id.toString()
                 carts.push(cart)
             }
             await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
@@ -47,12 +47,12 @@ export default class CartService {
         return id
     }
 
-    async getById(id: number): Promise<CartReadDto> {
+    async getById(id: string): Promise<CartReadDto> {
         var cartRet = null
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
-            cartRet = carts.find((cart: { id: number }) => cart.id == id)
+            cartRet = carts.find((cart: { id: number }) => cart.id == parseInt(id))
         } catch (error) {
             throw new Error(error.message)
         }
@@ -78,17 +78,26 @@ export default class CartService {
         }
     }
 
-    async update(id: number, product: CartAddProductDto): Promise<CartReadDto> {
+    async update(id: string, product: CartAddProductDto[]): Promise<CartReadDto> {
         let cartUpdated: CartReadDto = null
 
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
-            var cartIndex = carts.findIndex(cart => cart.id == id)
+            var cartIndex = carts.findIndex((cart: { id: number }) => cart.id == parseInt(id))
 
-            if (cartIndex !== -1) {                
-                carts[cartIndex].products.push(product)
-                cartUpdated = carts[cartIndex]
+            if (cartIndex !== -1) {   
+                for (let index = 0; index < product.length; index++) {
+                    const element = product[index];
+                    const cartProdIndex: number = carts[cartIndex].products.findIndex((prod: { _id: string }) => prod._id == element._id)
+                    if(cartProdIndex != -1){
+                        carts[cartIndex].products[cartProdIndex].amount += element.amount
+                        cartUpdated = carts[cartIndex]
+                    }else{
+                        carts[cartIndex].products.push(element)
+                        cartUpdated = carts[cartIndex]
+                    }                    
+                }             
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
             }
         } catch (error) {
@@ -98,17 +107,17 @@ export default class CartService {
         return cartUpdated
     }
 
-    async deleteProduct(id_cart: number, id_product: number): Promise<{ CartReadDto: CartReadDto, productIndex: number }> {
+    async deleteProduct(id_cart: string, id_product: string): Promise<{ CartReadDto: CartReadDto, productIndex: number }> {
         let cartUpdated: CartReadDto = null
         let productIndexRet: number = -1
 
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
-            var cartIndex = carts.findIndex((cart: { id: number }) => cart.id == id_cart)
+            var cartIndex = carts.findIndex((cart: { id: number }) => cart.id == parseInt(id_cart))
 
             if (cartIndex !== -1) {
-                let productIndex = carts[cartIndex].products.findIndex((product: { idProduct: number }) => product.idProduct == id_product)
+                let productIndex = carts[cartIndex].products.findIndex((product: { _id: number }) => product._id == parseInt(id_product))
                 if (productIndex !== -1) {
                     productIndexRet = productIndex
                     carts[cartIndex].products.splice(productIndex, 1)
@@ -126,21 +135,21 @@ export default class CartService {
         }
     }
 
-    async deleteById(id: number): Promise<Boolean> {
-        let deleted = false
+    async deleteById(id: string): Promise<CartReadDto> {
+        let cartDeleted: CartReadDto = null
         try {
             const cartsString = await fs.promises.readFile(`./src/database/${this.fileName}.txt`)
             const carts = JSON.parse(cartsString.toString())
-            var cartIndex = carts.findIndex(product => product.id == id)
+            var cartIndex = carts.findIndex((product: { id: number }) => product.id == parseInt(id))
 
             if (cartIndex !== -1) {
+                cartDeleted = carts[cartIndex]
                 carts.splice(cartIndex, 1)
                 await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(carts))
-                deleted = true
             }
         } catch (error) {
             throw new Error(error.message)
         }
-        return deleted
+        return cartDeleted
     }
 }

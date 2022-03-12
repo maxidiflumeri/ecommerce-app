@@ -4,20 +4,17 @@ import { Request, Response, NextFunction } from 'express'
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { CartsResultMessage } from '../../messages/cart.messages';
 import { ProductReadDto } from '../products/dtos/product-read.dto';
-import ProductService from '../products/services/product.mongo.service';
-import CartService from "./services/cart.mongo.service";
+import CartFactory from "./services/cartFactory.service";
+import ProductFactory from "../products/services/productFactory.service";
 import { CartAddProductDto } from './dtos/cart-add-product.dto';
 import { CartUpdateDto } from './dtos/cart-update.dto';
 import { CartCreateDto } from './dtos/cart-create.dto';
 import { CartReadDto } from "./dtos/cart-read.dto";
 
-const cartService = new CartService()
-class CartController {
-    public productService: ProductService
 
-    constructor(productService: ProductService) {
-        this.productService = productService
-    }
+class CartController {
+    public productService: any = ProductFactory.get()
+    public cartService: any = CartFactory.get()
 
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -25,7 +22,7 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Cart id parameter must be required.', null))
             }
 
-            const cart: CartReadDto = await cartService.getById(req.params.id)
+            const cart: CartReadDto = await this.cartService.getById(req.params.id)
 
             if (!cart) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
@@ -40,7 +37,7 @@ class CartController {
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            let carts: CartReadDto[] = await cartService.getAll()
+            let carts: CartReadDto[] = await this.cartService.getAll()
             res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, carts))
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(new CartsResultMessage(StatusCodes.INTERNAL_SERVER_ERROR, error.message, null))
@@ -54,7 +51,7 @@ class CartController {
             const cartCreate: CartCreateDto = plainToClass(CartCreateDto, req.body)
             const errors = await validate(cartCreate, { skipMissingProperties: true })
 
-            if (errors.length > 0) {
+            if (errors.length > 0) {                
                 const messages: string = this.validateErrors(errors)
                 res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
@@ -63,11 +60,11 @@ class CartController {
                     const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, element)
                     const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
 
-                    if (errorsProduct.length > 0) {
+                    if (errorsProduct.length > 0) {                        
                         isErrors = true
                         const messagesProduct: string = this.validateErrors(errorsProduct)
                         res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
-                    } else {
+                    } else {                        
                         const product: ProductReadDto = await this.productService.getById(cartAddProduct._id)
                         if (!product) {
                             isErrors = true
@@ -82,7 +79,7 @@ class CartController {
                 }
 
                 if (!isErrors) {
-                    const cartCreated: CartReadDto = await cartService.create(cartCreate)
+                    const cartCreated: CartReadDto = await this.cartService.create(cartCreate)
                     res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartCreated))
                 }
 
@@ -116,23 +113,23 @@ class CartController {
                         res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
                     } else {
                         const product: ProductReadDto = await this.productService.getById(cartAddProduct._id)
-                        const cart: CartReadDto = await cartService.getById(req.params.id)
+                        const cart: CartReadDto = await this.cartService.getById(req.params.id)
                         if (!product) {
                             isErrors = true
-                            res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Product id not found.', null))
+                            res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, `Product id ${cartAddProduct._id} not found.`, null))
                         } else if (!cart) {
                             isErrors = true
                             res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart id not found.', null))
                         } else {
                             if (product.stock < cartAddProduct.amount + cart.products.find(prod => prod._id == cartAddProduct._id).amount) {
                                 isErrors = true
-                                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, 'stock is les than amount.', null))
+                                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, `stock in product id ${cartAddProduct._id} is les than amount.`, null))
                             }
                         }
                     }
                 }
                 if (!isErrors) {
-                    const cartUpdated: CartReadDto = await cartService.update(req.params.id, cartUpdate.products)
+                    const cartUpdated: CartReadDto = await this.cartService.update(req.params.id, cartUpdate.products)
                     res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, cartUpdated))
                 }
 
@@ -149,12 +146,12 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Cart id parameter must be required.', null))
             }
 
-            const deleted: CartReadDto = await cartService.deleteById(req.params.id)
+            const deleted: CartReadDto = await this.cartService.deleteById(req.params.id)
 
             if (!deleted) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
             } else {
-                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, null))
+                res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.OK, ReasonPhrases.OK, deleted))
             }
 
         } catch (error) {
@@ -173,7 +170,7 @@ class CartController {
                 res.status(StatusCodes.BAD_REQUEST).json(new CartsResultMessage(StatusCodes.BAD_REQUEST, 'Product id parameter must be required.', null))
             }
 
-            const cartUpdated: { CartReadDto: CartReadDto, productIndex: number } = await cartService.deleteProduct(req.params.id_cart, req.params.id_product)
+            const cartUpdated: { CartReadDto: CartReadDto, productIndex: number } = await this.cartService.deleteProduct(req.params.id_cart, req.params.id_product)
 
             if (!cartUpdated) {
                 res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart not found.', null))
@@ -198,4 +195,4 @@ class CartController {
     }
 }
 
-export default new CartController(new ProductService())
+export default new CartController()

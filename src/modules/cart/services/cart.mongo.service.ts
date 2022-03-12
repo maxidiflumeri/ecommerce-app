@@ -28,14 +28,14 @@ export default class CartService {
     }
 
     async getAll(): Promise<CartReadDto[]> {
-        let carstRet: CartReadDto[] = null
+        let cartsRet: CartReadDto[] = null
         try {
-            carstRet = await CartModel.find()
+            cartsRet = await CartModel.find()            
         } catch (error) {
             throw new Error(error.message)
         }
 
-        return carstRet
+        return cartsRet
     }
 
     async deleteAll(): Promise<void> {
@@ -58,7 +58,7 @@ export default class CartService {
     }
 
     async update(id: string, products: CartAddProductDto[]): Promise<CartReadDto> {
-        let productUpdated: CartReadDto = null
+        let cartUpdated: CartReadDto = null
         try {
             for (let index = 0; index < products.length; index++) {
                 const element = products[index];
@@ -68,16 +68,16 @@ export default class CartService {
                 if (cartProd) {
                     cartProd.amount = cartProd.amount + element.amount
                     cart.save()
-                    productUpdated = cart
+                    cartUpdated = cart
                 } else {
-                    productUpdated = await CartModel.findByIdAndUpdate({ _id: id }, { $push: { products: element } })
+                    cartUpdated = await CartModel.findByIdAndUpdate({ _id: id }, { $push: { products: element } })
                 }
             }
         } catch (error) {
             throw new Error(error.message)
         }
 
-        return productUpdated
+        return cartUpdated
     }
 
     async deleteProduct(id_cart: string, id_product: string): Promise<{ CartReadDto: CartReadDto, productIndex: number }> {

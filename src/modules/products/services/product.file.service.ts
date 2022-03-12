@@ -1,5 +1,6 @@
 import { plainToClass } from 'class-transformer'
 import fs from 'fs'
+import moment from 'moment'
 import { ProductCreateDto } from '../dtos/product-create.dto'
 import { ProductReadDto } from '../dtos/product-read.dto'
 import { ProductUpdateDto } from '../dtos/product-update.dto'
@@ -33,10 +34,12 @@ export default class ProductService {
             if (products.length == 0) {
                 id = 1
                 product.id = id
+                product.createdAt = moment().format()                
                 products.push(product)
             } else {
                 id = products[products.length - 1].id + 1
                 product.id = id
+                product.createdAt = moment().format() 
                 products.push(product)
             }
             await fs.promises.writeFile(`./src/database/${this.fileName}.txt`, JSON.stringify(products))
