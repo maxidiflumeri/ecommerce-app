@@ -51,7 +51,7 @@ class CartController {
             const cartCreate: CartCreateDto = plainToClass(CartCreateDto, req.body)
             const errors = await validate(cartCreate, { skipMissingProperties: true })
 
-            if (errors.length > 0) {                
+            if (errors.length > 0) {
                 const messages: string = this.validateErrors(errors)
                 res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messages, null))
             } else {
@@ -60,11 +60,11 @@ class CartController {
                     const cartAddProduct: CartAddProductDto = plainToClass(CartAddProductDto, element)
                     const errorsProduct = await validate(cartAddProduct, { skipMissingProperties: true })
 
-                    if (errorsProduct.length > 0) {                        
+                    if (errorsProduct.length > 0) {
                         isErrors = true
                         const messagesProduct: string = this.validateErrors(errorsProduct)
                         res.status(StatusCodes.CONFLICT).json(new CartsResultMessage(StatusCodes.CONFLICT, messagesProduct, null))
-                    } else {                        
+                    } else {
                         const product: ProductReadDto = await this.productService.getById(cartAddProduct._id)
                         if (!product) {
                             isErrors = true
@@ -121,7 +121,7 @@ class CartController {
                             isErrors = true
                             res.status(StatusCodes.NOT_FOUND).json(new CartsResultMessage(StatusCodes.NOT_FOUND, 'Cart id not found.', null))
                         } else {
-                            if (product.stock < cartAddProduct.amount + cart.products.find(prod => prod._id == cartAddProduct._id).amount) {
+                            if ((cart.products.find(prod => prod._id == cartAddProduct._id)) && product.stock < cartAddProduct.amount + cart.products.find(prod => prod._id == cartAddProduct._id).amount) {
                                 isErrors = true
                                 res.status(StatusCodes.OK).json(new CartsResultMessage(StatusCodes.CONFLICT, `stock in product id ${cartAddProduct._id} is les than amount.`, null))
                             }

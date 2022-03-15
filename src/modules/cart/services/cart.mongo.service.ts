@@ -5,15 +5,15 @@ import { CartModel } from "../schemas/cart.schema";
 
 export default class CartService {
     async create(cart: CartCreateDto): Promise<CartReadDto> {
-        let productCreated = null
+        let cartCreated: CartReadDto = null
         try {
-            productCreated = await CartModel.create(cart)
+            cartCreated = await CartModel.create(cart)
         } catch (error) {
             console.log(error)
             throw new Error(error.message)
         }
 
-        return productCreated
+        return cartCreated
     }
 
     async getById(id: string): Promise<CartReadDto> {
@@ -30,7 +30,7 @@ export default class CartService {
     async getAll(): Promise<CartReadDto[]> {
         let cartsRet: CartReadDto[] = null
         try {
-            cartsRet = await CartModel.find()            
+            cartsRet = await CartModel.find()
         } catch (error) {
             throw new Error(error.message)
         }
@@ -67,12 +67,13 @@ export default class CartService {
 
                 if (cartProd) {
                     cartProd.amount = cartProd.amount + element.amount
-                    cart.save()
-                    cartUpdated = cart
+                    cart.save()                    
                 } else {
-                    cartUpdated = await CartModel.findByIdAndUpdate({ _id: id }, { $push: { products: element } })
+                    await CartModel.updateOne({ _id: id }, { $push: { products: element } })
                 }
             }
+            
+            cartUpdated = await this.getById(id)
         } catch (error) {
             throw new Error(error.message)
         }
@@ -92,7 +93,7 @@ export default class CartService {
                 await cart.save()
                 cartUpdated = cart
             }
-            
+
         } catch (error) {
             throw new Error(error.message)
         }

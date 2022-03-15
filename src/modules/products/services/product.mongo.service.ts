@@ -61,7 +61,8 @@ export default class ProductService {
     async update(id: string, product: ProductUpdateDto): Promise<ProductReadDto> { 
         let productUpdated: ProductReadDto = null
         try{
-            productUpdated = await ProductModel.findByIdAndUpdate({_id: id}, product)
+            await ProductModel.updateOne({_id: id}, product)
+            productUpdated = await this.getById(id)
         }catch (error) {
             throw new Error(error.message)
         }

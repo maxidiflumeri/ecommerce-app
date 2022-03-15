@@ -26,7 +26,9 @@ export default class ProductService {
 
         try {
             const productGet = await this.products.doc(`${id}`).get()
-            productRet = this.mapProduct(productGet.data(), productGet.id)            
+            if(productGet.data()){
+                productRet = this.mapProduct(productGet.data(), productGet.id)            
+            }
         } catch (error) {
             throw new Error(error.message)
         }
