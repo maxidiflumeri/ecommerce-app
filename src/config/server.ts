@@ -8,7 +8,7 @@ import { connect } from 'mongoose'
 
 const PORT = configService.get(Configuration.PORT) || process.env.PORT
 class Server {
-    public app: Application
+    private app: Application
 
     constructor() {
         this.app = express()
@@ -37,7 +37,7 @@ class Server {
         })
     }
 
-    async connectDbMongo() {
+    private async connectDbMongo() {
         await connect(configService.get(Configuration.MONGO_CONNECTION));
     }
 
@@ -54,6 +54,10 @@ class Server {
 
     private initializeSetters() {
         this.app.set('port', PORT)
+    }
+
+    public getApp(){
+        return this.app
     }
 }
 
