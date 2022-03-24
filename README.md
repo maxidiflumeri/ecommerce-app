@@ -26,6 +26,10 @@
 *Para limpiar el buildeo del proyecto correr el siguiente comando*
 
 **NPM RUN CLEAN**
+
+*Para ejecutar todos los test (tener en cuenta de correrlo con tipo de persistencia FIREBASE en .env)*
+
+**NPM RUN TEST**
 # ENDPOINT PRODUCTOS #
 
 **GET api/products (Devuelve todos los productos)**
